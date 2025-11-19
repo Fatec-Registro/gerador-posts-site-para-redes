@@ -1,6 +1,6 @@
 # Gerador de Posts - Fatec Registro
 
-Ferramenta web desenvolvida para padronizar e agilizar a criação de artes para redes sociais (Instagram Stories e Feed) da Fatec Registro. O projeto permite gerar imagens profissionais para divulgação de notícias, eventos e comunicados, seguindo rigorosamente o **Manual de Identidade Visual do Centro Paula Souza (CPS)**.
+Ferramenta web completa e responsiva para criar artes padronizadas para as redes sociais (Instagram Stories e Feed) da Fatec Registro. O projeto segue rigorosamente o **Manual de Identidade Visual do Centro Paula Souza (CPS)** e oferece recursos avançados de edição diretamente no navegador.
 
 ## 🚀 Funcionalidades
 
@@ -13,48 +13,53 @@ Ferramenta web desenvolvida para padronizar e agilizar a criação de artes para
     * **Imersivo:** Foto preenchendo todo o card com degradê e texto sobreposto (ideal para fotos de impacto).
     * **Minimalista:** Foco total na tipografia com uma faixa de imagem menor.
 
-### 🛠️ Ferramentas de Edição
+### 🛠️ Ferramentas de Edição Avançadas
 * **Controle Total da Imagem:**
-    * Upload de imagem de capa (suporta formato 16:9 sem distorção).
-    * **Pan & Zoom:** Ajuste a posição (X/Y) e o Zoom da foto para o enquadramento perfeito.
+    * **Drag & Drop:** Clique e arraste a foto diretamente no preview para posicionar.
+    * **Zoom & Ajuste Fino:** Sliders e inputs numéricos para controle preciso.
+    * **Filtros de Imagem:** Ajuste de **Brilho** e **Contraste** para corrigir fotos escuras ou lavadas.
     * **Overlay:** Controle deslizante para escurecer a imagem e melhorar a leitura do texto.
 * **Conteúdo Dinâmico:**
-    * Edição de Título com contador de caracteres.
-    * Seletor de Tags (Notícias, Vestibular, Eventos, Atlética, etc.).
+    * Edição de Título com contador de caracteres e aviso visual de limite.
+    * **Seletor de Tags:** Categorias como Notícias, Vestibular, Eventos, Atlética, etc.
     * Inserção opcional de Data.
-    * Controle numérico e deslizante para tamanho da fonte.
-* **Etiqueta de Curso (Chip):**
-    * Adicione uma etiqueta visual (Chip) para indicar o curso relacionado (ex: DSM, GESTÃO).
-    * Posicionamento inteligente (ajusta-se automaticamente no modo Imersivo).
+    * Controle numérico e deslizante para o tamanho da fonte.
+* **Personalização:**
+    * **Cor de Destaque:** Escolha entre as cores oficiais do manual ou use o seletor de cor livre.
+    * **Etiqueta de Curso (Chip):** Adicione uma etiqueta visual para cursos específicos (DSM, GESTÃO).
 
-### ⚙️ Recursos Extras
-* **Zona Segura (Safe Zone):** Overlay opcional que mostra onde ficam os elementos da interface do Instagram (perfil, reações) para evitar cortes de texto.
-* **Persistência de Dados:** O navegador salva automaticamente suas configurações (cores, textos, posições) para você não perder nada se fechar a aba.
-* **Cores Oficiais:** Seletor de cores baseado na paleta oficial do CPS.
-* **Exportação:**
-    * 💾 Baixar como PNG em alta resolução (escala 2x para telas Retina).
-    * 📋 Botão "Copiar Imagem" para colar direto no WhatsApp ou Web.
+### ⚙️ Recursos de Produtividade e UX
+* **Histórico (Undo/Redo):** Botões para desfazer e refazer alterações, permitindo experimentar sem medo.
+* **Reset:** Botão para voltar todas as configurações ao padrão inicial.
+* **Responsividade:** Interface adaptável para celulares (Menu Drawer) e controles de zoom para visualização em telas pequenas.
+* **Zona Segura (Safe Zone):** Overlay que mostra onde ficam os elementos da interface do Instagram para evitar cortes de texto.
+* **Persistência de Dados:** O navegador salva automaticamente seu trabalho.
+* **Exportação Flexível:**
+    * Escolha o formato (**PNG** ou **JPG**).
+    * Escolha a qualidade/escala (**1x**, **2x Retina**, **3x Ultra**).
+    * Botões para **Baixar** ou **Copiar** para a área de transferência.
 
 ## 💻 Tecnologias Utilizadas
 
-* **HTML5** (Semântico)
-* **CSS3** (Variáveis CSS, Flexbox, Responsividade)
-* **JavaScript** (Vanilla ES6+)
-* **[html2canvas](https://html2canvas.hertzen.com/):** Biblioteca para renderizar o DOM como imagem.
+* **HTML5** (Semântico e Acessível)
+* **CSS3** (Variáveis CSS, Flexbox, Grid, Media Queries)
+* **JavaScript** (Vanilla ES6+, Modularizado)
+* **[html2canvas](https://html2canvas.hertzen.com/):** Renderização do DOM como imagem.
 * **Fonte:** [Montserrat](https://fonts.google.com/specimen/Montserrat) (Google Fonts).
+* **Ícones:** Google Material Icons.
 
 ## 📂 Estrutura do Projeto
 
 ```text
 /
 ├── index.html    # Estrutura da interface e painel de controle
-├── style.css     # Estilos, regras de layout e identidade visual
-├── app.js        # Lógica de manipulação, canvas e persistência
-└── img/          # Logos e assets
+├── style.css     # Estilos, regras de layout, responsividade e animações
+├── app.js        # Lógica da aplicação (Estado, Histórico, Manipulação, Exportação)
+└── img/          # Logos e assets institucionais
     ├── fatec_registro.png
     ├── logo_cps_versao_cor.png
     └── logo-gov-sp-pb-com-vermelho.png
-```
+    └── ...
 
 ## 🚀 Como Usar
 

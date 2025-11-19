@@ -8,35 +8,66 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
-    <div id="toast">Ação realizada com sucesso!</div>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Gerando imagem de alta qualidade...</p>
+    </div>
 
-    <div class="editor-panel">
-        <h3>Gerador Fatec</h3>
+    <div id="toast">Alterações salvas</div>
+
+    <button id="mobile-menu-btn" aria-label="Abrir menu de edição">
+        <span class="material-icons">tune</span>
+    </button>
+
+    <div class="editor-panel" id="editor-panel">
+        <div class="panel-header">
+            <h3>Gerador Fatec</h3>
+            <button class="btn-icon" onclick="App.ui.toggleMobileMenu()" aria-label="Fechar menu">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+
+        <div class="history-controls">
+            <button class="btn-icon" onclick="App.history.undo()" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">
+                <span class="material-icons">undo</span>
+            </button>
+            <button class="btn-icon" onclick="App.history.redo()" title="Refazer (Ctrl+Y)" aria-label="Refazer">
+                <span class="material-icons">redo</span>
+            </button>
+            <button class="btn-text-sm" onclick="App.state.resetToDefaults()" title="Voltar ao padrão">
+                Resetar Tudo
+            </button>
+        </div>
 
         <div class="form-group highlight-box">
-            <label style="color: var(--cps-red);">FORMATO & LAYOUT</label>
-            <select id="input-format" onchange="changeFormat()">
+            <label for="input-format" style="color: var(--cps-red);">FORMATO & LAYOUT</label>
+            <select id="input-format" onchange="App.handlers.changeFormat()">
                 <option value="stories">Stories (9:16)</option>
                 <option value="feed">Feed (4:5)</option>
             </select>
 
-            <label style="margin-top:10px;">Estilo Visual:</label>
-            <select id="input-layout" onchange="changeLayout()">
+            <label for="input-layout" style="margin-top:10px;">Estilo Visual:</label>
+            <select id="input-layout" onchange="App.handlers.changeLayout()">
                 <option value="default">Padrão (Foto Topo / Texto Base)</option>
                 <option value="immersive">Imersivo (Foto Cheia + Overlay)</option>
                 <option value="minimal">Minimalista (Foco no Texto)</option>
             </select>
 
             <label style="margin-top:10px;">Cor de Destaque:</label>
-            <div class="color-picker" id="color-picker"></div>
+            <div class="color-picker-container">
+                <div class="color-picker" id="color-picker"></div>
+                <input type="color" id="custom-color" title="Cor Personalizada"
+                    onchange="App.handlers.setCustomColor(this.value)">
+            </div>
 
-            <label class="checkbox-label" style="margin-top: 15px;">
-                <input type="checkbox" id="toggle-safe-zone" onchange="toggleSafeZone()">
+            <label class="checkbox-label" style="margin-top: 15px;" for="toggle-safe-zone">
+                <input type="checkbox" id="toggle-safe-zone" onchange="App.ui.toggleSafeZone()">
                 Mostrar Zona Segura (Instagram)
             </label>
         </div>
@@ -44,8 +75,8 @@
         <h4>Conteúdo</h4>
 
         <div class="form-group">
-            <label>Categoria da Tag:</label>
-            <select id="input-tag" onchange="handleInput()">
+            <label for="input-tag">Categoria da Tag:</label>
+            <select id="input-tag" onchange="App.handlers.handleInput()">
                 <option value="Notícias" selected>Notícias</option>
                 <option value="Atlética">Atlética</option>
                 <option value="Destaque">Destaque</option>
@@ -59,39 +90,43 @@
         </div>
 
         <div class="form-group" style="background: #f0f0f0; padding: 10px; border-radius: 4px;">
-            <label class="checkbox-label" style="margin-bottom: 8px;">
-                <input type="checkbox" id="toggle-course-chip" onchange="toggleCourseChip()">
-                Etiqueta de Curso (Imagem)
+            <label class="checkbox-label" style="margin-bottom: 8px;" for="toggle-course-chip">
+                <input type="checkbox" id="toggle-course-chip" onchange="App.handlers.toggleCourseChip()">
+                Etiqueta de Curso
             </label>
 
-            <select id="input-course-chip" onchange="updateCourseChip()" disabled>
+            <select id="input-course-chip" onchange="App.handlers.updateCourseChip()" disabled
+                aria-label="Selecionar Curso">
                 <option value="DSM">DSM</option>
                 <option value="GESTÃO">GESTÃO</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label>Data (Opcional):</label>
-            <input type="date" id="input-data" oninput="handleInput()">
+            <label for="input-data">Data (Opcional):</label>
+            <input type="date" id="input-data" oninput="App.handlers.handleInput()">
         </div>
 
         <div class="form-group">
-            <label>Título: <span id="count-titulo" class="char-count">0/120</span></label>
+            <label for="input-titulo">Título: <span id="count-titulo" class="char-count">0/120</span></label>
             <textarea id="input-titulo" rows="3" maxlength="120"
-                oninput="handleInput(this, 120, 'count-titulo')"></textarea>
+                oninput="App.handlers.handleInput(this, 120, 'count-titulo')"></textarea>
+            <small id="title-warning" style="display:none; color: orange;">Considere quebrar a linha para melhor
+                leitura.</small>
 
-            <label style="margin-top: 8px; font-weight:normal; font-size: 10px;">Tamanho da Fonte (px):</label>
+            <label for="font-size-range" style="margin-top: 8px; font-weight:normal; font-size: 10px;">Tamanho da Fonte
+                (px):</label>
             <div class="control-group">
                 <input type="range" id="font-size-range" min="20" max="80" value="32"
-                    oninput="syncAndExec('font-size-range', 'font-size-num', updateFontSize)">
+                    oninput="App.utils.syncAndExec('font-size-range', 'font-size-num', App.handlers.updateFontSize)">
                 <input type="number" id="font-size-num" min="20" max="80" value="32"
-                    oninput="syncAndExec('font-size-num', 'font-size-range', updateFontSize)">
+                    oninput="App.utils.syncAndExec('font-size-num', 'font-size-range', App.handlers.updateFontSize)">
             </div>
         </div>
 
         <div class="form-group">
-            <label>Imagem de Capa (16:9 Recomendado):</label>
-            <input type="file" id="input-upload-cover" accept="image/*" onchange="handleCoverUpload()">
+            <label for="input-upload-cover">Imagem de Capa (Arraste na preview para mover):</label>
+            <input type="file" id="input-upload-cover" accept="image/*" onchange="App.handlers.handleCoverUpload()">
 
             <div class="image-controls" id="img-controls"
                 style="display:none; margin-top:10px; background:#eee; padding:10px; border-radius:4px;">
@@ -99,46 +134,82 @@
                 <label style="font-size:10px;">Zoom (Escala)</label>
                 <div class="control-group">
                     <input type="range" id="img-scale-range" min="1" max="4" step="0.1" value="1"
-                        oninput="syncAndExec('img-scale-range', 'img-scale-num', updateImgStyle)">
+                        oninput="App.utils.syncAndExec('img-scale-range', 'img-scale-num', App.handlers.updateImgStyle)">
                     <input type="number" id="img-scale-num" min="1" max="4" step="0.1" value="1"
-                        oninput="syncAndExec('img-scale-num', 'img-scale-range', updateImgStyle)">
+                        oninput="App.utils.syncAndExec('img-scale-num', 'img-scale-range', App.handlers.updateImgStyle)">
                 </div>
 
-                <label style="font-size:10px;">Posição Horizontal (X)</label>
-                <div class="control-group">
-                    <input type="range" id="img-pos-x-range" min="-150" max="150" value="0"
-                        oninput="syncAndExec('img-pos-x-range', 'img-pos-x-num', updateImgStyle)">
-                    <input type="number" id="img-pos-x-num" min="-150" max="150" value="0"
-                        oninput="syncAndExec('img-pos-x-num', 'img-pos-x-range', updateImgStyle)">
+                <div class="collapsible-controls">
+                    <details>
+                        <summary style="font-size: 10px; cursor: pointer; margin: 5px 0;">Ajuste Fino de Posição (X/Y)
+                        </summary>
+                        <label style="font-size:10px;">Posição X (%)</label>
+                        <div class="control-group">
+                            <input type="range" id="img-pos-x-range" min="-150" max="150" value="0"
+                                oninput="App.utils.syncAndExec('img-pos-x-range', 'img-pos-x-num', App.handlers.updateImgStyle)">
+                            <input type="number" id="img-pos-x-num" min="-150" max="150" value="0"
+                                oninput="App.utils.syncAndExec('img-pos-x-num', 'img-pos-x-range', App.handlers.updateImgStyle)">
+                        </div>
+                        <label style="font-size:10px;">Posição Y (%)</label>
+                        <div class="control-group">
+                            <input type="range" id="img-pos-y-range" min="-150" max="150" value="0"
+                                oninput="App.utils.syncAndExec('img-pos-y-range', 'img-pos-y-num', App.handlers.updateImgStyle)">
+                            <input type="number" id="img-pos-y-num" min="-150" max="150" value="0"
+                                oninput="App.utils.syncAndExec('img-pos-y-num', 'img-pos-y-range', App.handlers.updateImgStyle)">
+                        </div>
+                    </details>
                 </div>
 
-                <label style="font-size:10px;">Posição Vertical (Y)</label>
-                <div class="control-group">
-                    <input type="range" id="img-pos-y-range" min="-150" max="150" value="0"
-                        oninput="syncAndExec('img-pos-y-range', 'img-pos-y-num', updateImgStyle)">
-                    <input type="number" id="img-pos-y-num" min="-150" max="150" value="0"
-                        oninput="syncAndExec('img-pos-y-num', 'img-pos-y-range', updateImgStyle)">
-                </div>
+                <div class="filters-section" style="margin-top: 10px; border-top: 1px solid #ccc; padding-top: 5px;">
+                    <label style="font-size:11px; font-weight:bold; margin-bottom:5px;">Filtros & Efeitos</label>
 
-                <label style="font-size:10px;">Escurecer (0 a 1)</label>
-                <div class="control-group">
-                    <input type="range" id="img-overlay-range" min="0" max="0.9" step="0.1" value="0"
-                        oninput="syncAndExec('img-overlay-range', 'img-overlay-num', updateOverlay)">
-                    <input type="number" id="img-overlay-num" min="0" max="0.9" step="0.1" value="0"
-                        oninput="syncAndExec('img-overlay-num', 'img-overlay-range', updateOverlay)">
+                    <label style="font-size:10px;">Escurecer (Overlay)</label>
+                    <div class="control-group">
+                        <input type="range" id="img-overlay-range" min="0" max="0.9" step="0.1" value="0"
+                            oninput="App.utils.syncAndExec('img-overlay-range', 'img-overlay-num', App.handlers.updateOverlay)">
+                        <input type="number" id="img-overlay-num" min="0" max="0.9" step="0.1" value="0"
+                            oninput="App.utils.syncAndExec('img-overlay-num', 'img-overlay-range', App.handlers.updateOverlay)">
+                    </div>
+
+                    <label style="font-size:10px;">Brilho</label>
+                    <input type="range" id="filter-brightness" min="0.5" max="1.5" step="0.1" value="1"
+                        oninput="App.handlers.updateImgStyle()">
+
+                    <label style="font-size:10px;">Contraste</label>
+                    <input type="range" id="filter-contrast" min="0.5" max="1.5" step="0.1" value="1"
+                        oninput="App.handlers.updateImgStyle()">
                 </div>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Logo Unidade (Opcional):</label>
-            <input type="file" id="input-upload-logo" accept="image/*" onchange="handleLogoUpload()">
+            <label for="input-upload-logo">Logo Unidade (Opcional):</label>
+            <input type="file" id="input-upload-logo" accept="image/*" onchange="App.handlers.handleLogoUpload()">
+        </div>
+
+        <hr>
+
+        <div class="form-group">
+            <label for="export-format">Opções de Exportação:</label>
+            <div class="export-options">
+                <select id="export-format">
+                    <option value="png">PNG (Padrão)</option>
+                    <option value="jpeg">JPG (Leve)</option>
+                </select>
+                <select id="export-scale">
+                    <option value="1">1x (Rápido)</option>
+                    <option value="2" selected>2x (Retina)</option>
+                    <option value="3">3x (Ultra)</option>
+                </select>
+            </div>
         </div>
 
         <div class="btn-group">
-            <button class="btn btn-copy" onclick="copyImage()">📋 Copiar Imagem</button>
-            <button class="btn btn-save" onclick="downloadImage()">💾 Baixar PNG</button>
+            <button class="btn btn-copy" onclick="App.export.copyImage()">📋 Copiar</button>
+            <button class="btn btn-save" onclick="App.export.downloadImage()">💾 Baixar</button>
         </div>
+
+        <div class="last-saved" id="last-saved-time">Não salvo</div>
     </div>
 
     <div class="preview-area">
@@ -151,8 +222,8 @@
                     <div class="safe-footer">Interface Base</div>
                 </div>
 
-                <div class="cover-area">
-                    <img id="preview-cover-img" src="" style="display:none;" alt="Capa">
+                <div class="cover-area" id="cover-area-container">
+                    <img id="preview-cover-img" src="" style="display:none;" alt="Capa da Matéria" draggable="false">
                     <div class="cover-placeholder" id="cover-placeholder">
                         <span>Foto da Matéria</span>
                     </div>
@@ -194,6 +265,13 @@
                 </div>
 
             </div>
+        </div>
+
+        <div class="mobile-zoom-control">
+            <span class="material-icons" style="font-size:16px; color: #aaa;">zoom_out</span>
+            <input type="range" id="preview-zoom" min="0.3" max="1" step="0.05" value="0.55"
+                oninput="App.ui.updatePreviewZoom()">
+            <span class="material-icons" style="font-size:16px; color: #aaa;">zoom_in</span>
         </div>
     </div>
 
